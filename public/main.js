@@ -1,6 +1,7 @@
 const select = document.getElementById("subject");
 const units = document.getElementById("units");
-const topics = document.getElementById("topics");
+const navTab = document.getElementById("nav-tab");
+const tabContent = document.getElementById("nav-tabContent");
 
 
 async function getUnits() {
@@ -13,6 +14,9 @@ async function getUnits() {
     try {
         const response = await fetch(`/getUnits/${subjectId}`);
         const data = await response.json();
+        document.getElementById("main").style.display = "block";
+        navTab.innerHTML = "";
+        tabContent.innerHTML = "";
         displayUnits(data.units);
     } catch (error) {
         console.error("Error fetching units:", error);
@@ -20,11 +24,32 @@ async function getUnits() {
 }
 
 async function displayUnits(unitNames) {
+    let i = 0;
+    let w = 100/Object.keys(unitNames).length;
+    // console.log(unitNames);
     for (const unitName in unitNames) {
-        const unitHeading = document.createElement("h3");
-        unitHeading.textContent = unitName;
-        units.appendChild(unitHeading);
+        const unitHeading = document.createElement('button');
+        unitHeading.className = (i == 0) ? 'nav-link active' : 'nav-link';
+        unitHeading.id = `nav-${unitName}-tab`;
+        unitHeading.setAttribute('data-bs-toggle', 'tab');
+        unitHeading.setAttribute('data-bs-target', `#${unitName}`);
+        unitHeading.type = 'button';
+        unitHeading.role = 'tab';
+        unitHeading.style.width = `${w}%`
+        unitHeading.setAttribute('aria-controls', `nav-${unitName}`);
+        unitHeading.setAttribute('aria-selected', (i == 0) ? 'true' : 'false');
 
+        unitHeading.textContent = unitName;
+
+        navTab.appendChild(unitHeading);
+        const tabPane = document.createElement('div');
+        tabPane.className = `tab-pane fade ${(i++ == 0) ? "show active" : ""}`;
+        tabPane.id = `${unitName}`;
+        tabPane.role = 'tabpanel';
+        tabPane.setAttribute('aria-labelledby', `nav-${unitName}-tab`);
+        tabPane.tabIndex = 0;
+        tabPane.style.paddingTop = "1.5rem"
+        tabContent.appendChild(tabPane);
         const downloadButton = document.createElement("button");
         downloadButton.textContent = "Download Topics";
         const buttonId = `downloadbtn_${unitNames[unitName]}`;
@@ -32,8 +57,8 @@ async function displayUnits(unitNames) {
         downloadButton.onclick = (event) => {
             getUnitTopics(unitNames[unitName], unitName, event.target);
         };
-        await displayTopics(unitNames[unitName]);
-        units.appendChild(downloadButton);
+        await displayTopics(unitNames[unitName], tabPane);
+        tabPane.appendChild(downloadButton);
     }
 }
 
@@ -57,12 +82,12 @@ async function downloadTopics(unitId, unitName, unitTopics, dbtn) {
         let cnt = 1;
 
         let total = unitTopics.length;
-        for(const t of unitTopics) if(t.pdf == null) total --;
-        
+        for (const t of unitTopics) if (t.pdf == null) total--;
+
         dbtn.style.setProperty("--btnclr", "rgba(0, 128, 0, 0.4)");
         for (const topic of unitTopics) {
             const pdfFileName = topic.pdf;
-            if(pdfFileName == null) continue;
+            if (pdfFileName == null) continue;
 
             const temp = `https://api.tesseractonline.com/${pdfFileName}`;
 
@@ -96,7 +121,7 @@ async function downloadTopics(unitId, unitName, unitTopics, dbtn) {
 
 
 
-async function displayTopics(unitId) {
+async function displayTopics(unitId, tabPane) {
     try {
         const response = await fetch(`/getTopics/${unitId}`);
         const data = await response.json();
@@ -105,7 +130,7 @@ async function displayTopics(unitId) {
         if (unitTopics.length === 0) {
             const noTopicsMessage = document.createElement("p");
             noTopicsMessage.textContent = "No topics found for this unit.";
-            units.appendChild(noTopicsMessage);
+            tabPane.appendChild(noTopicsMessage);
             return;
         }
 
@@ -113,8 +138,9 @@ async function displayTopics(unitId) {
         let cnt = 1;
 
         unitTopics.forEach(topic => {
-            if(topic.pdf != null){
+            if (topic.pdf != null) {
                 let li = document.createElement("li");
+                li.style.padding = "0.3rem 0";
                 const anchor = document.createElement("a");
                 anchor.textContent = topic.name;
                 anchor.href = 'https://api.tesseractonline.com/' + topic.pdf; // Assuming "pdf" is the key containing the PDF URL
@@ -126,7 +152,7 @@ async function displayTopics(unitId) {
             }
             cnt++;
         });
-        units.appendChild(ol);
+        tabPane.appendChild(ol);
     } catch (error) {
         console.error("Error fetching topics:", error);
     }
@@ -155,5 +181,6 @@ async function abcd() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById("main").style.display = "none";
     abcd();
 });

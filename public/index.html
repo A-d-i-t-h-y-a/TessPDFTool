@@ -12,10 +12,17 @@
         crossorigin="anonymous"></script>
     <title>Document</title>
     <style>
+        #main {
+            border: 1px solid #d2d2d2b3;
+            box-shadow: 0px 0px 23px -10px;
+            border-radius: 10px;
+            padding: 0.5rem;
+        }
+
         [id*="downloadbtn_"] {
             position: relative;
             padding: 0.7rem 1rem;
-            margin: 0.8rem 0;
+            margin: 0rem 0.8rem 0.8rem;
             border-radius: 0.7rem;
             background-color: transparent;
             border: 1px solid rgba(128, 128, 128, 0.549);
@@ -52,12 +59,15 @@
             </button>
         </div>
         <div id="main">
-            <div id="units">
+            <!-- <div id="units">
                 <ol id="ol">
 
                 </ol>
-            </div>
-            <div id="topics"></div>
+            </div> -->
+            <nav>
+                <div class="nav nav-tabs justify-content-around" id="nav-tab" role="tablist"></div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent"></div>
         </div>
     </div>
     <script src="./main.js"></script>
