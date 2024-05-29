@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous" />
+    <!-- <link rel="stylesheet" href="https://unpkg.com/placeholder-loading/dist/css/placeholder-loading.min.css" /> -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+        crossorigin="anonymous"></script>
+    <title>Document</title>
+    <style>
+        [id*="downloadbtn_"] {
+            position: relative;
+            padding: 0.7rem 1rem;
+            margin: 0.8rem 0;
+            border-radius: 0.7rem;
+            background-color: transparent;
+            border: 1px solid rgba(128, 128, 128, 0.549);
+        }
+
+        [id*="downloadbtn_"]::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: var(--afterbtn,
+                    0%);
+            /* Fill exactly 33.3% of the button's width */
+            height: 100%;
+            border-radius: 0.7rem;
+            background-color: var(--btnclr,
+                    rgba(0, 128, 0, 0.4));
+            /* Set the color to fill */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <!-- <select name="subject" id="subject">
+            <option value="sub">Subjects</option>
+    </select> -->
+        <div>
+            <select class="form-select" aria-label="Default select example" id="subject">
+                <option selected>Select Subject</option>
+            </select>
+            <button class="btn btn-primary my-3" type="button" onclick="getUnits()">
+                Fetch Units
+            </button>
+        </div>
+        <div id="main">
+            <div id="units">
+                <ol id="ol">
+
+                </ol>
+            </div>
+            <div id="topics"></div>
+        </div>
+    </div>
+    <script src="./main.js"></script>
+</body>
+
+</html>
