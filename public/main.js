@@ -82,8 +82,8 @@ async function displayUnits(unitNames) {
         downloadButton.onclick = (event) => {
             getUnitTopics(unitNames[unitName], unitName, event.target);
         };
-        await displayTopics(unitNames[unitName], tabPane);
-        tabPane.appendChild(downloadButton);
+        const res = await displayTopics(unitNames[unitName], tabPane);
+        if(res) tabPane.appendChild(downloadButton);
     }
 }
 
@@ -151,12 +151,15 @@ async function displayTopics(unitId, tabPane) {
         const response = await fetch(`/getTopics/${unitId}`);
         const data = await response.json();
         const unitTopics = data.topics;
-
-        if (unitTopics.length === 0) {
+        const countPDFs = unitTopics.filter(topic => topic.pdf != null).length;
+        if (countPDFs === 0) {
             const noTopicsMessage = document.createElement("p");
-            noTopicsMessage.textContent = "No topics found for this unit.";
+            noTopicsMessage.style.color = 'grey';
+            noTopicsMessage.style.textAlign = 'center';
+            noTopicsMessage.style.marginBottom = '1.5rem';
+            noTopicsMessage.textContent = "No topics found for this unit";
             tabPane.appendChild(noTopicsMessage);
-            return;
+            return false;
         }
 
         let ol = document.createElement("ol");
@@ -178,8 +181,10 @@ async function displayTopics(unitId, tabPane) {
             cnt++;
         });
         tabPane.appendChild(ol);
+        return true;
     } catch (error) {
         console.error("Error fetching topics:", error);
+        return false;
     }
 }
 
