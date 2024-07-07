@@ -4,18 +4,28 @@
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
+const ytdl = require('ytdl-core');
 
 const app = express();
 const port = 3000;
 
+let auth;
+
 const subArray = [];
 app.use(cors());
 
+app.use(express.json());
 app.use(express.static(require('path').join(__dirname, 'public')));
+
+app.post('/sendAuth', (req, res)=>{
+    auth = req.body.auth;
+    res.json({response :'Auth Received'});
+})
 
 app.get('/', (req, res) => {
     res.sendFile('index.html');
 });
+
 
 app.get('/getSub', async (req, res) => {
     try {
@@ -40,7 +50,7 @@ app.get('/proxy-pdf/:pdfUrl', async (req, res) => {
     try {
         const pdfUrl = decodeURIComponent(req.params.pdfUrl);
         const response = await fetch(pdfUrl);
-        
+
         if (!response.ok) {
             throw new Error(`Failed to fetch PDF: ${response.statusText}`);
         }
@@ -57,7 +67,7 @@ app.get('/proxy-pdf/:pdfUrl', async (req, res) => {
         // Set response headers for PDF
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename="downloaded.pdf"');
-        
+
         // Send PDF buffer as response
         res.send(pdfBuffer);
     } catch (error) {
@@ -76,6 +86,17 @@ app.get('/getTopics/:unitId', async (req, res) => {
     }
 });
 
+app.get('/download', (req, res) => {
+    var URL = req.query.URL;
+    console.log("In Progress");
+    res.header('Content-Disposition', `attachment; filename="${req.query.topicName}.mp4"`);
+    ytdl(URL, {
+        format: 'mp4',
+        quality: 'highest',
+    }).pipe(res);
+    console.log("In Progress");
+});
+
 app.listen(port, () => {
     console.log(`Example app listening on port http://localhost:${port}`);
 });
@@ -84,12 +105,12 @@ async function getSubjects() {
     try {
         const response = await fetch(process.env.SUB, {
             headers: {
-                Authorization: process.env.AUTH
+                Authorization: auth
             }
         });
         const data = await response.json();
         const newObj = data.payload
-            .filter(item => item.yearsemester_code === 'III-II')
+            .filter(item => (item.yearsemester_code === 'III-II' || item.yearsemester_code === 'III-I'))
             .reduce((acc, item) => {
                 acc[item.subject_name] = item.subject_id;
                 return acc;
@@ -107,7 +128,7 @@ async function getTopics(unitId) {
     try {
         const response = await fetch(`${process.env.TOPIC}${unitId}`, {
             headers: {
-                Authorization: process.env.AUTH
+                Authorization: auth
             }
         });
         const data = await response.json();
@@ -121,7 +142,7 @@ async function getUnits(subid) {
     try {
         const response = await fetch(`${process.env.UNIT}${subid}`, {
             headers: {
-                Authorization: process.env.AUTH
+                Authorization: auth
             }
         });
         const data = await response.json();

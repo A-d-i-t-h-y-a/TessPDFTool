@@ -10,13 +10,16 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
         crossorigin="anonymous"></script>
-    <title>Document</title>
+
+    <link rel="icon" type="image/png" sizes="96x96" href="ficon-96.png">
+    <title>PDF Downloader</title>
     <style>
-        #main {
+        #nav-tabContent {
             border: 1px solid #d2d2d2b3;
+            border-top: none;
             box-shadow: 0px 0px 23px -10px;
-            border-radius: 10px;
-            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0px 0px 10px 10px;
         }
 
         [id*="downloadbtn_"] {
@@ -46,11 +49,16 @@
 </head>
 
 <body>
+
     <div class="container mt-5">
-        <!-- <select name="subject" id="subject">
-            <option value="sub">Subjects</option>
-    </select> -->
-        <div>
+        <div id="Auth">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="AUTH" placeholder="Bearer .........">
+                <label for="AUTH">Enter the Auth Token</label>
+                <button class="btn btn-primary mt-3" type="button" onclick="sendAuth()">Submit</button>
+            </div>
+        </div>
+        <div id="afterAUTH">
             <select class="form-select" aria-label="Default select example" id="subject">
                 <option selected>Select Subject</option>
             </select>
@@ -59,16 +67,12 @@
             </button>
         </div>
         <div id="main">
-            <!-- <div id="units">
-                <ol id="ol">
-
-                </ol>
-            </div> -->
             <nav>
                 <div class="nav nav-tabs justify-content-around" id="nav-tab" role="tablist"></div>
             </nav>
             <div class="tab-content" id="nav-tabContent"></div>
         </div>
+        <button id="convert-yt" class="btn btn-primary">Download YT</button>
     </div>
     <script src="./main.js"></script>
 </body>

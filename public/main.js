@@ -3,6 +3,31 @@ const units = document.getElementById("units");
 const navTab = document.getElementById("nav-tab");
 const tabContent = document.getElementById("nav-tabContent");
 
+async function sendAuth() {
+    let auth = sessionStorage.getItem("auth");
+    console.log(auth);
+    if(auth == null){
+        auth = document.getElementById("AUTH").value;
+        console.log(JSON.stringify({auth}))
+    }
+    await fetch("/sendAuth", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({auth})
+    })
+    let valid = await abcd();
+    if(valid == true){
+        sessionStorage.setItem("auth", auth);
+        document.getElementById("Auth").style.display = "none";
+    }
+    else{
+        alert("Invalid Token");
+        if(sessionStorage.getItem("auth") != null) sessionStorage.removeItem('auth')
+        document.getElementById("Auth").style.display = "block";
+    }
+}
 
 async function getUnits() {
     const subjectId = select.value;
@@ -25,7 +50,7 @@ async function getUnits() {
 
 async function displayUnits(unitNames) {
     let i = 0;
-    let w = 100/Object.keys(unitNames).length;
+    let w = 100 / Object.keys(unitNames).length;
     // console.log(unitNames);
     for (const unitName in unitNames) {
         const unitHeading = document.createElement('button');
@@ -175,12 +200,27 @@ async function abcd() {
             option.textContent = subject;
             select.appendChild(option);
         });
+        return true;
     } catch (error) {
         console.error("Error fetching subjects:", error);
     }
 }
 
+var convertBtn = document.getElementById("convert-yt");
+convertBtn.addEventListener('click', () => {
+    console.log("Hello")
+    sendURL("https://youtu.be/F0Koz414TYg");
+});
+
+function sendURL(URL) {
+    console.log("In Func")
+    window.location.href = `/download?URL=${URL}?topicName=Arduino`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("main").style.display = "none";
-    abcd();
+    if(sessionStorage.getItem("auth")!=null){
+        document.getElementById('Auth').style.display = "none";
+        sendAuth();
+    }
 });
