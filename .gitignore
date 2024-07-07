@@ -1,2 +1,4 @@
 node_modules
 extract_yt.js
+Dockerfile
+.dockerignore
